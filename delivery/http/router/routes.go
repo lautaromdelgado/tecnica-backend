@@ -15,5 +15,7 @@ func InitRoutes(e *echo.Echo, authHandler *handler.AuthHandler, secret string) {
 	// Rutas privadas (requieren JWT)
 	private := e.Group("/api")
 	private.Use(middleware.JWTMiddleware(secret))
-	private.PUT("/update/user", authHandler.Update)
+	// USUARIOS
+	private.PUT("/update/user", authHandler.Update)    // Actualizar usuario por ID
+	private.DELETE("/delete/user", authHandler.Delete) // Eliminar usuario por ID
 }
