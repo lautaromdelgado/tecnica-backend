@@ -9,6 +9,8 @@ import (
 	"github.com/lautaromdelgado/tecnica-backend/infrastructure/token"
 )
 
+// JWTMiddleware es un middleware de Echo que valida el token JWT en la cabecera Authorization
+// y lo decodifica para obtener los claims personalizados.
 func JWTMiddleware(secret string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
