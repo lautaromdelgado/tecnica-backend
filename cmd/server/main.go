@@ -10,8 +10,8 @@ import (
 )
 
 func main() {
-	cfg := config.LoadConfig()
-	secret := cfg.JWTSecret
+	cfg := config.LoadConfig() // Cargar configuración desde el archivo .env
+	secret := cfg.JWTSecret    // Clave secreta para JWT
 	e := echo.New()
 
 	// Conexión a base de datos
@@ -26,7 +26,9 @@ func main() {
 	authUC := usecase.NewAuthUseCase(userRepo)
 	authHandler := handler.NewAuthHandler(authUC, cfg.JWTSecret)
 
+	// Inicializar rutas
 	router.InitRoutes(e, authHandler, secret)
 
+	// Iniciar servidor
 	e.Logger.Fatal(e.Start(":" + cfg.Port))
 }
