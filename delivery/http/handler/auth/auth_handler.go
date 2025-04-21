@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/http/dto/user"
 	"github.com/lautaromdelgado/tecnica-backend/infrastructure/token"
 	model "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/user"
 	usecase "github.com/lautaromdelgado/tecnica-backend/usecase/auth"
@@ -34,10 +35,7 @@ func (h *AuthHandler) Register(c echo.Context) error {
 
 func (h *AuthHandler) Login(c echo.Context) error {
 	// TODO: Implementar un DTO para el login => una estructura usuario solo meial y username
-	var req struct {
-		Username string `json:"username"`
-		Email    string `json:"email"`
-	}
+	var req dto.RegisterRequest
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid input")
 	}
