@@ -28,4 +28,5 @@ func InitRoutes(e *echo.Echo, authHandler *handler.AuthHandler, secret string) {
 	// ADMINISTRADORES = /api/admin/
 	admin.DELETE("/delete/user/:id", authHandler.DeleteByID) // Eliminar usuario por ID siendo admin
 	admin.GET("/users", authHandler.ListAll)                 // Listar todos los usuarios siendo admin
+	admin.GET("/users/inactive", authHandler.ListInactive)   // Listar usuarios inactivos siendo admin
 }
