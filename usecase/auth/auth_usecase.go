@@ -25,7 +25,7 @@ func NewAuthUseCase(userRepo repository.UserRepository) *authUseCase {
 
 func (uc *authUseCase) Register(ctx context.Context, u *model.User) error {
 	if u.Role == "" {
-		u.Role = "user" // Default role
+		u.Role = "user"
 	}
 	return uc.userRepo.Create(ctx, u)
 }
