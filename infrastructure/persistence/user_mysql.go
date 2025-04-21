@@ -2,7 +2,6 @@ package persistence
 
 import (
 	"context"
-	"log"
 
 	"github.com/jmoiron/sqlx"
 	model "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/user"
@@ -32,7 +31,6 @@ func (r *UserRepository) GetByEmail(ctx context.Context, username, email string)
 	} */
 	err := r.db.GetContext(ctx, &user, query, username, email)
 	if err != nil {
-		log.Printf("❌ Error en GetByEmail: %v", err)
 		return nil, err
 	}
 
