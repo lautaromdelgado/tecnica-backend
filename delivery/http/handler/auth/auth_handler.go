@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/http/dto/user"
@@ -86,4 +87,28 @@ func (h *AuthHandler) Delete(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "error deleting user")
 	}
 	return c.JSON(http.StatusOK, echo.Map{"message": "user deleted"})
+}
+
+// eliminar un usuario por su id siendo admin
+func (h *AuthHandler) DeleteByID(c echo.Context) error {
+	_, role, err := middleware.GetUserFromContext(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid token")
+	}
+
+	if role != "admin" {
+		return echo.NewHTTPError(http.StatusForbidden, "only admins can delete users")
+	}
+
+	idParam := c.Param("id")
+	userIDToDelete, err := strconv.Atoi(idParam)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid user id")
+	}
+
+	err = h.authUC.DeleteByID(c.Request().Context(), uint(userIDToDelete))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Error deleting user")
+	}
+	return c.JSON(http.StatusOK, echo.Map{"message": "user deleted by admin"})
 }
