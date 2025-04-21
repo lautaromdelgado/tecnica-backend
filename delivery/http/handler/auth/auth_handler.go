@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/http/dto/user"
+	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/user"
 	"github.com/lautaromdelgado/tecnica-backend/delivery/http/middleware"
 	"github.com/lautaromdelgado/tecnica-backend/infrastructure/token"
 	model "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/user"

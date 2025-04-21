@@ -2,11 +2,12 @@ package router
 
 import (
 	"github.com/labstack/echo/v4"
-	handler "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/auth"
+	handler_auth "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/auth"
+	handler_event "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/event"
 	middleware "github.com/lautaromdelgado/tecnica-backend/delivery/http/middleware/jwt"
 )
 
-func InitRoutes(e *echo.Echo, authHandler *handler.AuthHandler, secret string) {
+func InitRoutes(e *echo.Echo, authHandler *handler_auth.AuthHandler, eventHandler *handler_event.EventHandler, secret string) {
 	// Rutas públicas
 	// Ruta: /api
 	public := e.Group("/api")
@@ -26,8 +27,13 @@ func InitRoutes(e *echo.Echo, authHandler *handler.AuthHandler, secret string) {
 	private.DELETE("/delete/user", authHandler.Delete) // Eliminar usuario por ID
 
 	// ADMINISTRADORES = /api/admin/
+
+	// Relacionado a los usuarios
 	admin.DELETE("/delete/user/:id", authHandler.DeleteByID) // Eliminar usuario por ID siendo admin
 	admin.GET("/users", authHandler.ListAll)                 // Listar todos los usuarios siendo admin
 	admin.GET("/users/inactive", authHandler.ListInactive)   // Listar usuarios inactivos siendo admin
 	admin.PUT("/users/:id/restore", authHandler.RestoreUser) // Restaurar usuario por ID siendo admin
+
+	// Relacionado a los eventos
+	admin.POST("/events/create", eventHandler.Create) // Crear evento
 }
