@@ -11,6 +11,7 @@ import (
 type AuthUseCase interface {
 	Register(ctx context.Context, user *model.User) error
 	Login(ctx context.Context, email, password string) (*model.User, error)
+	UpdateByID(ctx context.Context, user *model.User) error
 }
 
 type authUseCase struct {
@@ -36,4 +37,8 @@ func (uc *authUseCase) Login(ctx context.Context, username, email string) (*mode
 		return nil, errors.New("invalid credentials")
 	}
 	return user, nil
+}
+
+func (uc *authUseCase) UpdateByID(ctx context.Context, u *model.User) error {
+	return uc.userRepo.UpdateByID(ctx, u)
 }

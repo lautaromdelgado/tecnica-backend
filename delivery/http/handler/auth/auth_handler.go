@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/http/dto/user"
+	"github.com/lautaromdelgado/tecnica-backend/delivery/http/middleware"
 	"github.com/lautaromdelgado/tecnica-backend/infrastructure/token"
 	model "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/user"
 	usecase "github.com/lautaromdelgado/tecnica-backend/usecase/auth"
@@ -47,4 +48,27 @@ func (h *AuthHandler) Login(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusOK, echo.Map{"token": token})
+}
+
+func (h *AuthHandler) Update(c echo.Context) error {
+	var req dto.UpdateUserRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid input")
+	}
+	userID, _, err := middleware.GetUserFromContext(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	user := &model.User{
+		ID:       userID,
+		Username: req.Username,
+		Email:    req.Email,
+	}
+
+	if err := h.authUC.UpdateByID(c.Request().Context(), user); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{"message": "user updated"})
 }
