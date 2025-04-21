@@ -12,4 +12,5 @@ type UserRepository interface {
 	UpdateByID(ctx context.Context, user *model.User) error
 	DeleteByID(ctx context.Context, id uint) error
 	FindAllActive(ctx context.Context) ([]*model.User, error)
+	FindAllInactive(ctx context.Context) ([]*model.User, error)
 }

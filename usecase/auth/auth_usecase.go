@@ -14,6 +14,7 @@ type AuthUseCase interface {
 	UpdateByID(ctx context.Context, user *model.User) error
 	DeleteByID(ctx context.Context, id uint) error
 	ListActiveUsers(ctx context.Context) ([]*model.User, error)
+	ListInactiveUsers(ctx context.Context) ([]*model.User, error)
 }
 
 type authUseCase struct {
@@ -53,6 +54,12 @@ func (uc *authUseCase) DeleteByID(ctx context.Context, id uint) error {
 	return uc.userRepo.DeleteByID(ctx, id)
 }
 
+// ListActiveUsers obtiene todos los usuarios activos de la base de datos
 func (uc *authUseCase) ListActiveUsers(ctx context.Context) ([]*model.User, error) {
 	return uc.userRepo.FindAllActive(ctx)
+}
+
+// ListInactiveUsers obtiene todos los usuarios inactivos de la base de datos
+func (uc *authUseCase) ListInactiveUsers(ctx context.Context) ([]*model.User, error) {
+	return uc.userRepo.FindAllInactive(ctx)
 }

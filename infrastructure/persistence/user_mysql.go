@@ -58,3 +58,11 @@ func (r *UserRepository) FindAllActive(ctx context.Context) ([]*model.User, erro
 	err := r.db.SelectContext(ctx, &users, query)
 	return users, err
 }
+
+// FindByID obtiene los usuarios inactivos de la base de datos
+func (r *UserRepository) FindAllInactive(ctx context.Context) ([]*model.User, error) {
+	var users []*model.User
+	query := `SELECT id, username, email, role FROM users WHERE deleted_at IS NOT NULL`
+	err := r.db.SelectContext(ctx, &users, query)
+	return users, err
+}

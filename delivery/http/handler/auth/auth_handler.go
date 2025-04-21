@@ -138,3 +138,27 @@ func (h *AuthHandler) ListAll(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, res)
 }
+
+// Listar todos los usuarios inactivos (solo admin)
+func (h *AuthHandler) ListInactive(c echo.Context) error {
+	_, role, err := middleware.GetUserFromContext(c)
+	if err != nil || role != "admin" {
+		return echo.NewHTTPError(403, "Admin only")
+	}
+
+	users, err := h.authUC.ListInactiveUsers(c.Request().Context())
+	if err != nil {
+		return echo.NewHTTPError(500, "Could not fetch inactive users")
+	}
+
+	var res []dto.UserResponse
+	for _, u := range users {
+		res = append(res, dto.UserResponse{
+			ID:       u.ID,
+			Username: u.Username,
+			Email:    u.Email,
+			Role:     u.Role,
+		})
+	}
+	return c.JSON(http.StatusOK, res)
+}
