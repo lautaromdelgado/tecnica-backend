@@ -34,7 +34,6 @@ func (h *AuthHandler) Register(c echo.Context) error {
 }
 
 func (h *AuthHandler) Login(c echo.Context) error {
-	// TODO: Implementar un DTO para el login => una estructura usuario solo meial y username
 	var req dto.RegisterRequest
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid input")
