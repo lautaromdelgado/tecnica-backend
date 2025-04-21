@@ -45,3 +45,10 @@ func (r *UserRepository) UpdateByID(ctx context.Context, u *model.User) error {
 	_, err := r.db.ExecContext(ctx, query, u.Username, u.Email, u.ID)
 	return err
 }
+
+// DeleteByID marca un usuario como eliminado en la base de datos por su ID
+func (r *UserRepository) DeleteByID(ctx context.Context, id uint) error {
+	query := `UPDATE users SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL`
+	_, err := r.db.ExecContext(ctx, query, id)
+	return err
+}

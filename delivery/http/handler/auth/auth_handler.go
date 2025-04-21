@@ -23,6 +23,7 @@ func NewAuthHandler(usecase usecase.AuthUseCase, secret string) *AuthHandler {
 	}
 }
 
+// crear un nuevo usuario
 func (h *AuthHandler) Register(c echo.Context) error {
 	var request model.User
 	if err := c.Bind(&request); err != nil {
@@ -34,6 +35,7 @@ func (h *AuthHandler) Register(c echo.Context) error {
 	return c.JSON(http.StatusCreated, echo.Map{"message": "user created"})
 }
 
+// inicia sesión de usuario
 func (h *AuthHandler) Login(c echo.Context) error {
 	var req dto.LoginRequest
 	if err := c.Bind(&req); err != nil {
@@ -50,6 +52,7 @@ func (h *AuthHandler) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"token": token})
 }
 
+// actualizar usuario por id
 func (h *AuthHandler) Update(c echo.Context) error {
 	var req dto.UpdateUserRequest
 	if err := c.Bind(&req); err != nil {
@@ -71,4 +74,16 @@ func (h *AuthHandler) Update(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{"message": "user updated"})
+}
+
+// eliminar usuario por id
+func (h *AuthHandler) Delete(c echo.Context) error {
+	userID, _, err := middleware.GetUserFromContext(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
+	}
+	if err := h.authUC.DeleteByID(c.Request().Context(), userID); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "error deleting user")
+	}
+	return c.JSON(http.StatusOK, echo.Map{"message": "user deleted"})
 }
