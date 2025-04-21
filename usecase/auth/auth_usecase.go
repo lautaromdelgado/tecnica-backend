@@ -13,6 +13,7 @@ type AuthUseCase interface {
 	Login(ctx context.Context, email, password string) (*model.User, error)
 	UpdateByID(ctx context.Context, user *model.User) error
 	DeleteByID(ctx context.Context, id uint) error
+	ListActiveUsers(ctx context.Context) ([]*model.User, error)
 }
 
 type authUseCase struct {
@@ -50,4 +51,8 @@ func (uc *authUseCase) UpdateByID(ctx context.Context, u *model.User) error {
 // DeleteByID marca un usuario como eliminado en la base de datos por su ID
 func (uc *authUseCase) DeleteByID(ctx context.Context, id uint) error {
 	return uc.userRepo.DeleteByID(ctx, id)
+}
+
+func (uc *authUseCase) ListActiveUsers(ctx context.Context) ([]*model.User, error) {
+	return uc.userRepo.FindAllActive(ctx)
 }

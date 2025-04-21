@@ -11,4 +11,5 @@ type UserRepository interface {
 	GetByEmail(ctx context.Context, username, email string) (*model.User, error)
 	UpdateByID(ctx context.Context, user *model.User) error
 	DeleteByID(ctx context.Context, id uint) error
+	FindAllActive(ctx context.Context) ([]*model.User, error)
 }

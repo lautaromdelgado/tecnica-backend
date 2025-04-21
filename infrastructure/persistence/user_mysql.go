@@ -50,3 +50,11 @@ func (r *UserRepository) DeleteByID(ctx context.Context, id uint) error {
 	_, err := r.db.ExecContext(ctx, query, id)
 	return err
 }
+
+// FindAllActive obtiene todos los usuarios activos de la base de datos
+func (r *UserRepository) FindAllActive(ctx context.Context) ([]*model.User, error) {
+	var users []*model.User
+	query := `SELECT id, username, email, role FROM users WHERE deleted_at IS NULL`
+	err := r.db.SelectContext(ctx, &users, query)
+	return users, err
+}
