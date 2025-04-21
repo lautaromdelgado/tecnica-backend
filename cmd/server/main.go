@@ -11,6 +11,7 @@ import (
 
 func main() {
 	cfg := config.LoadConfig()
+	secret := cfg.JWTSecret
 	e := echo.New()
 
 	// Conexión a base de datos
@@ -25,7 +26,6 @@ func main() {
 	authUC := usecase.NewAuthUseCase(userRepo)
 	authHandler := handler.NewAuthHandler(authUC, cfg.JWTSecret)
 
-	secret := "secret_hetmo_app"
 	router.InitRoutes(e, authHandler, secret)
 
 	e.Logger.Fatal(e.Start(":" + cfg.Port))
