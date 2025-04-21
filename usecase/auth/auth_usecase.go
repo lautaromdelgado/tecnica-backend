@@ -9,12 +9,13 @@ import (
 )
 
 type AuthUseCase interface {
-	Register(ctx context.Context, user *model.User) error
-	Login(ctx context.Context, email, password string) (*model.User, error)
-	UpdateByID(ctx context.Context, user *model.User) error
-	DeleteByID(ctx context.Context, id uint) error
-	ListActiveUsers(ctx context.Context) ([]*model.User, error)
-	ListInactiveUsers(ctx context.Context) ([]*model.User, error)
+	Register(ctx context.Context, user *model.User) error                   // Crear un nuevo usuario
+	Login(ctx context.Context, email, password string) (*model.User, error) // Obtener un usuario por su email y password
+	UpdateByID(ctx context.Context, user *model.User) error                 // Actualizar un usuario por su ID
+	DeleteByID(ctx context.Context, id uint) error                          // Eliminar un usuario por su ID
+	ListActiveUsers(ctx context.Context) ([]*model.User, error)             // Obtener todos los usuarios activos
+	ListInactiveUsers(ctx context.Context) ([]*model.User, error)           // Obtener todos los usuarios inactivos
+	RestoreUser(ctx context.Context, id uint) error                         // Restaurar un usuario por su ID
 }
 
 type authUseCase struct {
@@ -62,4 +63,9 @@ func (uc *authUseCase) ListActiveUsers(ctx context.Context) ([]*model.User, erro
 // ListInactiveUsers obtiene todos los usuarios inactivos de la base de datos
 func (uc *authUseCase) ListInactiveUsers(ctx context.Context) ([]*model.User, error) {
 	return uc.userRepo.FindAllInactive(ctx)
+}
+
+// RestoreUser restaura un usuario en la base de datos por su ID
+func (uc *authUseCase) RestoreUser(ctx context.Context, id uint) error {
+	return uc.userRepo.RestoreByID(ctx, id)
 }

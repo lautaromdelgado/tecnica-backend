@@ -66,3 +66,10 @@ func (r *UserRepository) FindAllInactive(ctx context.Context) ([]*model.User, er
 	err := r.db.SelectContext(ctx, &users, query)
 	return users, err
 }
+
+// RestoreByID restaura un usuario en la base de datos por su ID
+func (r *UserRepository) RestoreByID(ctx context.Context, id uint) error {
+	query := `UPDATE users SET deleted_at = NULL, updated_at = NOW() WHERE id = ? AND deleted_at IS NOT NULL`
+	_, err := r.db.ExecContext(ctx, query, id)
+	return err
+}

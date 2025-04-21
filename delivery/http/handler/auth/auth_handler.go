@@ -162,3 +162,23 @@ func (h *AuthHandler) ListInactive(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, res)
 }
+
+// Restaurar un usuario por su id siendo admin
+func (h *AuthHandler) RestoreUser(c echo.Context) error {
+	_, role, err := middleware.GetUserFromContext(c)
+	if err != nil || role != "admin" {
+		return echo.NewHTTPError(403, "Admin only")
+	}
+
+	idParam := c.Param("id")
+	userIDToRestore, err := strconv.Atoi(idParam)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid user id")
+	}
+
+	err = h.authUC.RestoreUser(c.Request().Context(), uint(userIDToRestore))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Error restoring user")
+	}
+	return c.JSON(http.StatusOK, echo.Map{"message": "user restored by admin"})
+}
