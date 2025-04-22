@@ -73,3 +73,10 @@ func (r *eventRepo) UpdatePublishStatus(ctx context.Context, id uint, publish bo
 	_, err := r.db.ExecContext(ctx, query, publish, id)
 	return err
 }
+
+// RestoreByID restaura un evento por ID (soft delete)
+func (r *eventRepo) RestoreByID(ctx context.Context, id uint) error {
+	query := `UPDATE events SET deleted_at = NULL, updated_at = NOW() WHERE id = ? AND deleted_at IS NOT NULL`
+	_, err := r.db.ExecContext(ctx, query, id)
+	return err
+}

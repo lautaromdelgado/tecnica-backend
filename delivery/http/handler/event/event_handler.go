@@ -151,3 +151,24 @@ func (h *EventHandler) togglePublish(c echo.Context, publish bool) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "event publish status updated successfully"})
 }
+
+// Restore restaura un evento por ID (soft delete)
+func (h *EventHandler) Restore(c echo.Context) error {
+	_, role, err := middleware.GetUserFromContext(c)
+	if err != nil || role != "admin" {
+		return echo.NewHTTPError(http.StatusForbidden, "admin only")
+	}
+
+	idParam := c.Param("id")
+	eventID, err := strconv.ParseUint(idParam, 10, 64)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid event id")
+	}
+
+	err = h.eventUC.RestoreByID(c.Request().Context(), uint(eventID))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "could not restore event")
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "event restored successfully"})
+}

@@ -13,6 +13,7 @@ type EventUseCase interface {
 	UpdateEvent(ctx context.Context, event *model.Event) error            // Actualiza un evento existente
 	DeleteEvent(ctx context.Context, id uint) error                       // Elimina un evento por ID (marcando como eliminado)
 	UpdatePublishStatus(ctx context.Context, id uint, publish bool) error // Actualiza el estado de publicación de un evento por ID
+	RestoreByID(ctx context.Context, id uint) error                       // Restaurar evento por ID (soft delete)
 }
 
 type eventUseCase struct {
@@ -55,4 +56,12 @@ func (uc *eventUseCase) UpdatePublishStatus(ctx context.Context, id uint, publis
 		return errors.New("invalid event id")
 	}
 	return uc.eventRepo.UpdatePublishStatus(ctx, id, publish)
+}
+
+// RestoreByID restaura un evento por ID (soft delete)
+func (uc *eventUseCase) RestoreByID(ctx context.Context, id uint) error {
+	if id == 0 {
+		return errors.New("invalid event id")
+	}
+	return uc.eventRepo.RestoreByID(ctx, id)
 }
