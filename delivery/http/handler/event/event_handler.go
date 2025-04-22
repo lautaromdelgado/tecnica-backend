@@ -208,3 +208,30 @@ func (h *EventHandler) GetLogFiltered(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"logs": logs})
 }
+
+func (h *EventHandler) GetEventByID(c echo.Context) error {
+	role := "user"
+	if user := c.Get("user"); user != nil {
+		_, roleFromToken, err := middleware.GetUserFromContext(c)
+		if err == nil {
+			role = roleFromToken
+		}
+	}
+
+	idParam := c.Param("id")
+	eventID, err := strconv.ParseUint(idParam, 10, 64)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid event id")
+	}
+
+	event, err := h.eventUC.GetByIDWhitPermissions(c.Request().Context(), uint(eventID), role)
+	if err != nil {
+		if err.Error() == "unauthorized to view this event" {
+			return echo.NewHTTPError(http.StatusForbidden, "not authorized to view this event")
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "event not found")
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"event": event,
+	})
+}

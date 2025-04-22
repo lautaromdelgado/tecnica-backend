@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/event"
 	model "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/event"
 	model_event_log "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/event_log"
 	repository_event "github.com/lautaromdelgado/tecnica-backend/internal/domain/repository/event"
@@ -11,11 +12,12 @@ import (
 )
 
 type EventUseCase interface {
-	CreateEvent(ctx context.Context, event *model.Event) error            // Crea un nuevo evento
-	UpdateEvent(ctx context.Context, event *model.Event) error            // Actualiza un evento existente
-	DeleteEvent(ctx context.Context, id uint) error                       // Elimina un evento por ID (marcando como eliminado)
-	UpdatePublishStatus(ctx context.Context, id uint, publish bool) error // Actualiza el estado de publicación de un evento por ID
-	RestoreByID(ctx context.Context, id uint) error                       // Restaurar evento por ID (soft delete)
+	CreateEvent(ctx context.Context, event *model.Event) error                                    // Crea un nuevo evento
+	UpdateEvent(ctx context.Context, event *model.Event) error                                    // Actualiza un evento existente
+	DeleteEvent(ctx context.Context, id uint) error                                               // Elimina un evento por ID (marcando como eliminado)
+	UpdatePublishStatus(ctx context.Context, id uint, publish bool) error                         // Actualiza el estado de publicación de un evento por ID
+	RestoreByID(ctx context.Context, id uint) error                                               // Restaurar evento por ID (soft delete)
+	GetByIDWhitPermissions(ctx context.Context, id uint, role string) (*dto.EventResponse, error) // Obtiene un evento por ID con permisos
 }
 
 type eventUseCase struct {
@@ -127,4 +129,32 @@ func (uc *eventUseCase) RestoreByID(ctx context.Context, id uint) error {
 		Action:    "restore",
 	}
 	return uc.eventLogRepo.LogAction(ctx, log)
+}
+
+// GetByIDWhitPermissions obtiene un evento por ID con permisos
+// Verifica si el evento fue eliminado y si está publicado o no
+func (uc *eventUseCase) GetByIDWhitPermissions(ctx context.Context, id uint, role string) (*dto.EventResponse, error) {
+	event, err := uc.eventRepo.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	// Si el evento fue eliminado
+	if event.DeletedAt != nil {
+		return nil, errors.New("event deleted")
+	}
+	// Si no está publicado y no sos admin
+	if !event.IsPublished && role != "admin" {
+		return nil, errors.New("unauthorized to view this event")
+	}
+	event_dto := dto.EventResponse{
+		ID:               event.ID,
+		Organizer:        event.Organizer,
+		Title:            event.Title,
+		LongDescription:  event.LongDescription,
+		ShortDescription: event.ShortDescription,
+		Date:             event.Date,
+		Location:         event.Location,
+		IsPublished:      event.IsPublished,
+	}
+	return &event_dto, nil
 }
