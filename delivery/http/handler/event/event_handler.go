@@ -191,17 +191,17 @@ func (h *EventHandler) GetLogs(c echo.Context) error {
 	})
 }
 
-// GetLogsByTitle obtiene logs de eventos por título
-func (h *EventHandler) GetLogsByTitle(c echo.Context) error {
+// GetLogsFiltered obtiene logs de eventos por filtros (título, acción, organizador)
+func (h *EventHandler) GetLogFiltered(c echo.Context) error {
 	_, role, err := middleware.GetUserFromContext(c)
 	if err != nil || role != "admin" {
 		return echo.NewHTTPError(http.StatusForbidden, "admin only")
 	}
 	title := c.QueryParam("title")
-	if title == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "missing title parameter")
-	}
-	logs, err := h.eventLogUC.GetLogsByTittle(c.Request().Context(), title)
+	action := c.QueryParam("action")
+	organizer := c.QueryParam("organizer")
+
+	logs, err := h.eventLogUC.GetLogsByFilters(c.Request().Context(), title, action, organizer)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "could not fetch logs")
 	}

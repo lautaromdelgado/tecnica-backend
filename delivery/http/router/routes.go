@@ -44,5 +44,5 @@ func InitRoutes(e *echo.Echo, authHandler *handler_auth.AuthHandler, eventHandle
 
 	// Relacionado a los logs de eventos
 	admin.GET("/events/logs", eventHandler.GetLogs)               // Obtener todos los logs de eventos siendo admin
-	admin.GET("/events/logs/filter", eventHandler.GetLogsByTitle) // Obtener logs de eventos por título siendo admin
+	admin.GET("/events/logs/filter", eventHandler.GetLogFiltered) // Obtener logs de eventos por filtros siendo admin
 }

@@ -9,7 +9,7 @@ import (
 
 type EventLogUseCase interface {
 	GetAllLogs(ctx context.Context) ([]*model.EventLog, error)
-	GetLogsByTittle(ctx context.Context, title string) ([]*model.EventLog, error)
+	GetLogsByFilters(ctx context.Context, title, action, organizer string) ([]*model.EventLog, error)
 }
 
 type eventLogUseCase struct {
@@ -28,6 +28,6 @@ func (uc *eventLogUseCase) GetAllLogs(ctx context.Context) ([]*model.EventLog, e
 }
 
 // GetLogsByTitle obtiene logs de eventos por título
-func (uc *eventLogUseCase) GetLogsByTittle(ctx context.Context, title string) ([]*model.EventLog, error) {
-	return uc.eventLogRepo.GetLogsByTittle(ctx, title)
+func (uc *eventLogUseCase) GetLogsByFilters(ctx context.Context, title, action, organizer string) ([]*model.EventLog, error) {
+	return uc.eventLogRepo.GetLogsByFilters(ctx, title, action, organizer)
 }

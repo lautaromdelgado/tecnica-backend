@@ -33,9 +33,26 @@ func (r *eventLogRepo) GetAllLogs(ctx context.Context) ([]*model.EventLog, error
 }
 
 // GetLogsByTittle obtiene logs de eventos por título
-func (r *eventLogRepo) GetLogsByTittle(ctx context.Context, title string) ([]*model.EventLog, error) {
-	query := `SELECT * FROM event_logs WHERE title LIKE ? ORDER BY timestamp DESC`
+func (r *eventLogRepo) GetLogsByFilters(ctx context.Context, title, action, organizer string) ([]*model.EventLog, error) {
+	query := `SELECT * FROM event_logs WHERE 1=1`
+	var args []interface{}
+
+	if title != "" {
+		query += ` AND LOWER(title) LIKE LOWER(?)`
+		args = append(args, "%"+title+"%")
+	}
+	if action != "" {
+		query += ` AND action = ?`
+		args = append(args, action)
+	}
+	if organizer != "" {
+		query += ` AND LOWER(organizer) LIKE LOWER(?)`
+		args = append(args, "%"+organizer+"%")
+	}
+
+	query += ` ORDER BY timestamp DESC`
+
 	var logs []*model.EventLog
-	err := r.db.SelectContext(ctx, &logs, query, "%"+title+"%")
+	err := r.db.SelectContext(ctx, &logs, query, args...)
 	return logs, err
 }
