@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/event"
@@ -55,4 +56,44 @@ func (h *EventHandler) Create(c echo.Context) error {
 	return c.JSON(http.StatusCreated, echo.Map{
 		"message": "event created successfully",
 	})
+}
+
+// Update actualiza un evento existente
+func (h *EventHandler) Update(c echo.Context) error {
+	_, role, err := middleware.GetUserFromContext(c)
+	if err != nil || role != "admin" {
+		return echo.NewHTTPError(http.StatusForbidden, "admin only")
+	}
+
+	idParam := c.Param("id")
+	eventID, err := strconv.ParseUint(idParam, 10, 64)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid event id")
+	}
+
+	var req dto.UpdateEventRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+	}
+
+	updated := &model.Event{
+		ID:               uint(eventID),
+		Organizer:        req.Organizer,
+		Title:            req.Title,
+		LongDescription:  req.LongDescription,
+		ShortDescription: req.ShortDescription,
+		Date:             req.Date,
+		Location:         req.Location,
+		IsPublished:      false, // por defecto
+	}
+
+	if req.IsPublished != nil {
+		updated.IsPublished = *req.IsPublished
+	}
+
+	if err := h.eventUC.UpdateEvent(c.Request().Context(), updated); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update event")
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "event updated successfully"})
 }

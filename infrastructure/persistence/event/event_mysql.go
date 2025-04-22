@@ -15,7 +15,7 @@ func NewEventRepository(db *sqlx.DB) *eventRepo {
 	return &eventRepo{db: db}
 }
 
-// Create inserta un nuevo evento en la base de datos
+// Create inserta un nuevo evento
 func (r *eventRepo) Create(ctx context.Context, event *model.Event) error {
 	query := `
 		INSERT INTO events (
@@ -31,5 +31,31 @@ func (r *eventRepo) Create(ctx context.Context, event *model.Event) error {
 		event.Date,
 		event.Location,
 		event.IsPublished)
+	return err
+}
+
+// Update actualiza un evento existente
+func (r *eventRepo) Update(ctx context.Context, event *model.Event) error {
+	query := `
+		UPDATE events 
+		SET 
+			organizer = ?, 
+			title = ?, 
+			long_description = ?, 
+			short_description = ?, 
+			date = ?, 
+			location = ?, 
+			is_published = ?, 
+			updated_at = NOW()
+		WHERE id = ? AND deleted_at IS NULL
+	`
+	_, err := r.db.ExecContext(ctx, query, event.Organizer,
+		event.Title,
+		event.LongDescription,
+		event.ShortDescription,
+		event.Date,
+		event.Location,
+		event.IsPublished,
+		event.ID)
 	return err
 }

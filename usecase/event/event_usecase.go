@@ -10,6 +10,7 @@ import (
 
 type EventUseCase interface {
 	CreateEvent(ctx context.Context, event *model.Event) error
+	UpdateEvent(ctx context.Context, event *model.Event) error
 }
 
 type eventUseCase struct {
@@ -22,9 +23,18 @@ func NewEventUseCase(er repository.EventRepository) *eventUseCase {
 	}
 }
 
+// CreateEvent crea un nuevo evento
 func (uc *eventUseCase) CreateEvent(ctx context.Context, event *model.Event) error {
 	if event.Title == "" || event.Organizer == "" || event.Date == 0 {
 		return errors.New("missing required fields")
 	}
 	return uc.eventRepo.Create(ctx, event)
+}
+
+// UpdateEvent actualiza un evento existente
+func (uc *eventUseCase) UpdateEvent(ctx context.Context, event *model.Event) error {
+	if event.ID == 0 || event.Title == "" || event.Organizer == "" || event.Date <= 0 {
+		return errors.New("missing required fields")
+	}
+	return uc.eventRepo.Update(ctx, event)
 }
