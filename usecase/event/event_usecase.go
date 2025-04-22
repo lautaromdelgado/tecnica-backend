@@ -62,13 +62,24 @@ func (uc *eventUseCase) UpdateEvent(ctx context.Context, event *model.Event) err
 	return uc.eventLogRepo.LogAction(ctx, log)
 }
 
-// TODO: Implementar event_log para delete y restore y cambiar estado de evento si publicado o no publicado
 // DeleteEvent elimina un evento por ID (marcando como eliminado)
 func (uc *eventUseCase) DeleteEvent(ctx context.Context, id uint) error {
 	if id == 0 {
 		return errors.New("invalid event id")
 	}
-	return uc.eventRepo.Delete(ctx, id)
+	if err := uc.eventRepo.Delete(ctx, id); err != nil {
+		return err
+	}
+	event, err := uc.eventRepo.FindByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	log := &model_event_log.EventLog{
+		Title:     event.Title,
+		Organizer: event.Organizer,
+		Action:    "delete",
+	}
+	return uc.eventLogRepo.LogAction(ctx, log)
 }
 
 // UpdatePublishStatus actualiza el estado de publicación de un evento por ID
@@ -76,7 +87,26 @@ func (uc *eventUseCase) UpdatePublishStatus(ctx context.Context, id uint, publis
 	if id == 0 {
 		return errors.New("invalid event id")
 	}
-	return uc.eventRepo.UpdatePublishStatus(ctx, id, publish)
+	event, err := uc.eventRepo.FindByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	if event.DeletedAt != nil {
+		return errors.New("event is deleted and cannot be updated")
+	}
+	if err := uc.eventRepo.UpdatePublishStatus(ctx, id, publish); err != nil {
+		return err
+	}
+	action := "unpublish"
+	if publish {
+		action = "publish"
+	}
+	log := &model_event_log.EventLog{
+		Title:     event.Title,
+		Organizer: event.Organizer,
+		Action:    action,
+	}
+	return uc.eventLogRepo.LogAction(ctx, log)
 }
 
 // RestoreByID restaura un evento por ID (soft delete)
@@ -84,5 +114,17 @@ func (uc *eventUseCase) RestoreByID(ctx context.Context, id uint) error {
 	if id == 0 {
 		return errors.New("invalid event id")
 	}
-	return uc.eventRepo.RestoreByID(ctx, id)
+	if err := uc.eventRepo.RestoreByID(ctx, id); err != nil {
+		return err
+	}
+	event, err := uc.eventRepo.FindByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	log := &model_event_log.EventLog{
+		Title:     event.Title,
+		Organizer: event.Organizer,
+		Action:    "restore",
+	}
+	return uc.eventLogRepo.LogAction(ctx, log)
 }

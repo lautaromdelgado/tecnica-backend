@@ -80,3 +80,13 @@ func (r *eventRepo) RestoreByID(ctx context.Context, id uint) error {
 	_, err := r.db.ExecContext(ctx, query, id)
 	return err
 }
+
+// FindByID busca un evento por ID
+func (r *eventRepo) FindByID(ctx context.Context, id uint) (*model.Event, error) {
+	query := `SELECT * FROM events WHERE id = ? LIMIT 1`
+	var event model.Event
+	if err := r.db.GetContext(ctx, &event, query, id); err != nil {
+		return nil, err
+	}
+	return &event, nil
+}

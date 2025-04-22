@@ -12,4 +12,6 @@ type EventRepository interface {
 	Delete(ctx context.Context, id uint) error                            // Elimina un evento por ID (marcando como eliminado)
 	UpdatePublishStatus(ctx context.Context, id uint, publish bool) error // Actualiza el estado de publicación de un evento por ID
 	RestoreByID(ctx context.Context, id uint) error                       // Restaurar evento por ID (soft delete)
+
+	FindByID(ctx context.Context, id uint) (*model.Event, error) // Busca un evento por ID
 }
