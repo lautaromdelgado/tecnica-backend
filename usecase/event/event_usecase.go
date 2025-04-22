@@ -5,7 +5,9 @@ import (
 	"errors"
 
 	model "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/event"
-	repository "github.com/lautaromdelgado/tecnica-backend/internal/domain/repository/event"
+	model_event_log "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/event_log"
+	repository_event "github.com/lautaromdelgado/tecnica-backend/internal/domain/repository/event"
+	repository_event_log "github.com/lautaromdelgado/tecnica-backend/internal/domain/repository/event_log"
 )
 
 type EventUseCase interface {
@@ -17,12 +19,14 @@ type EventUseCase interface {
 }
 
 type eventUseCase struct {
-	eventRepo repository.EventRepository
+	eventRepo    repository_event.EventRepository        // Repositorio de eventos
+	eventLogRepo repository_event_log.EventLogRepository // Repositorio para registrar acciones de eventos
 }
 
-func NewEventUseCase(er repository.EventRepository) *eventUseCase {
+func NewEventUseCase(er repository_event.EventRepository, event_log repository_event_log.EventLogRepository) *eventUseCase {
 	return &eventUseCase{
-		eventRepo: er,
+		eventRepo:    er,
+		eventLogRepo: event_log,
 	}
 }
 
@@ -31,7 +35,15 @@ func (uc *eventUseCase) CreateEvent(ctx context.Context, event *model.Event) err
 	if event.Title == "" || event.Organizer == "" || event.Date == 0 {
 		return errors.New("missing required fields")
 	}
-	return uc.eventRepo.Create(ctx, event)
+	if err := uc.eventRepo.Create(ctx, event); err != nil {
+		return err
+	}
+	log := &model_event_log.EventLog{
+		Title:     event.Title,
+		Organizer: event.Organizer,
+		Action:    "create",
+	}
+	return uc.eventLogRepo.LogAction(ctx, log)
 }
 
 // UpdateEvent actualiza un evento existente
@@ -39,9 +51,18 @@ func (uc *eventUseCase) UpdateEvent(ctx context.Context, event *model.Event) err
 	if event.ID == 0 || event.Title == "" || event.Organizer == "" || event.Date <= 0 {
 		return errors.New("missing required fields")
 	}
-	return uc.eventRepo.Update(ctx, event)
+	if err := uc.eventRepo.Update(ctx, event); err != nil {
+		return err
+	}
+	log := &model_event_log.EventLog{
+		Title:     event.Title,
+		Organizer: event.Organizer,
+		Action:    "update",
+	}
+	return uc.eventLogRepo.LogAction(ctx, log)
 }
 
+// TODO: Implementar event_log para delete y restore y cambiar estado de evento si publicado o no publicado
 // DeleteEvent elimina un evento por ID (marcando como eliminado)
 func (uc *eventUseCase) DeleteEvent(ctx context.Context, id uint) error {
 	if id == 0 {

@@ -7,6 +7,7 @@ import (
 	"github.com/lautaromdelgado/tecnica-backend/delivery/http/router"
 	"github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence"
 	persistence_event "github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence/event"
+	persistence_event_log "github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence/event_log"
 	persistence_user "github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence/user"
 	"github.com/lautaromdelgado/tecnica-backend/pkg/config"
 	usecase_auth "github.com/lautaromdelgado/tecnica-backend/usecase/auth"
@@ -30,9 +31,12 @@ func main() {
 	authUC := usecase_auth.NewAuthUseCase(userRepo)
 	authHandler := handler_user.NewAuthHandler(authUC, cfg.JWTSecret)
 
+	// Dependencia para logs de eventos
+	eventLogRepo := persistence_event_log.NewEventLogRepository(db)
+
 	// Dependencias para eventos
 	eventRepo := persistence_event.NewEventRepository(db)
-	eventUC := usecase_event.NewEventUseCase(eventRepo)
+	eventUC := usecase_event.NewEventUseCase(eventRepo, eventLogRepo)
 	eventHandler := handler_event.NewEventHandler(eventUC)
 
 	// Inicializar rutas
