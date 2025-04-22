@@ -66,3 +66,10 @@ func (r *eventRepo) Delete(ctx context.Context, id uint) error {
 	_, err := r.db.ExecContext(ctx, query, id)
 	return err
 }
+
+// UpdatePublishStatus actualiza el estado de publicación de un evento por ID
+func (r *eventRepo) UpdatePublishStatus(ctx context.Context, id uint, publish bool) error {
+	query := `UPDATE events SET is_published = ?, updated_at = NOW() WHERE id = ? AND deleted_at IS NULL`
+	_, err := r.db.ExecContext(ctx, query, publish, id)
+	return err
+}

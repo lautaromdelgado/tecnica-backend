@@ -119,3 +119,35 @@ func (h *EventHandler) Delete(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "event deleted successfully"})
 }
+
+// UpdatePublishStatus actualiza el estado de publicación de un evento por ID
+func (h *EventHandler) Publish(c echo.Context) error {
+	return h.togglePublish(c, true)
+}
+
+// Unpublish despublica un evento por ID
+func (h *EventHandler) Unpublish(c echo.Context) error {
+	return h.togglePublish(c, false)
+}
+
+// togglePublish actualiza el estado de publicación de un evento por ID
+// y verifica si el usuario tiene el rol de administrador
+func (h *EventHandler) togglePublish(c echo.Context, publish bool) error {
+	_, role, err := middleware.GetUserFromContext(c)
+	if err != nil || role != "admin" {
+		return echo.NewHTTPError(http.StatusForbidden, "admin only")
+	}
+
+	idParam := c.Param("id")
+	eventID, err := strconv.ParseUint(idParam, 10, 64)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid event id")
+	}
+
+	err = h.eventUC.UpdatePublishStatus(c.Request().Context(), uint(eventID), publish)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "could not update event publish status")
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "event publish status updated successfully"})
+}

@@ -9,9 +9,10 @@ import (
 )
 
 type EventUseCase interface {
-	CreateEvent(ctx context.Context, event *model.Event) error // Crea un nuevo evento
-	UpdateEvent(ctx context.Context, event *model.Event) error // Actualiza un evento existente
-	DeleteEvent(ctx context.Context, id uint) error            // Elimina un evento por ID (marcando como eliminado)
+	CreateEvent(ctx context.Context, event *model.Event) error            // Crea un nuevo evento
+	UpdateEvent(ctx context.Context, event *model.Event) error            // Actualiza un evento existente
+	DeleteEvent(ctx context.Context, id uint) error                       // Elimina un evento por ID (marcando como eliminado)
+	UpdatePublishStatus(ctx context.Context, id uint, publish bool) error // Actualiza el estado de publicación de un evento por ID
 }
 
 type eventUseCase struct {
@@ -46,4 +47,12 @@ func (uc *eventUseCase) DeleteEvent(ctx context.Context, id uint) error {
 		return errors.New("invalid event id")
 	}
 	return uc.eventRepo.Delete(ctx, id)
+}
+
+// UpdatePublishStatus actualiza el estado de publicación de un evento por ID
+func (uc *eventUseCase) UpdatePublishStatus(ctx context.Context, id uint, publish bool) error {
+	if id == 0 {
+		return errors.New("invalid event id")
+	}
+	return uc.eventRepo.UpdatePublishStatus(ctx, id, publish)
 }
