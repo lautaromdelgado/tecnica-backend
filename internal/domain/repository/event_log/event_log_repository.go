@@ -7,6 +7,7 @@ import (
 )
 
 type EventLogRepository interface {
-	LogAction(ctx context.Context, log *model.EventLog) error  // Registra una acción de evento
-	GetAllLogs(ctx context.Context) ([]*model.EventLog, error) // Obtiene todos los logs de eventos
+	LogAction(ctx context.Context, log *model.EventLog) error                     // Registra una acción de evento
+	GetAllLogs(ctx context.Context) ([]*model.EventLog, error)                    // Obtiene todos los logs de eventos
+	GetLogsByTittle(ctx context.Context, title string) ([]*model.EventLog, error) // Obtiene logs de eventos por título
 }

@@ -31,3 +31,11 @@ func (r *eventLogRepo) GetAllLogs(ctx context.Context) ([]*model.EventLog, error
 	}
 	return logs, nil
 }
+
+// GetLogsByTittle obtiene logs de eventos por título
+func (r *eventLogRepo) GetLogsByTittle(ctx context.Context, title string) ([]*model.EventLog, error) {
+	query := `SELECT * FROM event_logs WHERE title LIKE ? ORDER BY timestamp DESC`
+	var logs []*model.EventLog
+	err := r.db.SelectContext(ctx, &logs, query, "%"+title+"%")
+	return logs, err
+}

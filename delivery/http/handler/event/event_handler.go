@@ -190,3 +190,21 @@ func (h *EventHandler) GetLogs(c echo.Context) error {
 		"logs": logs,
 	})
 }
+
+// GetLogsByTitle obtiene logs de eventos por título
+func (h *EventHandler) GetLogsByTitle(c echo.Context) error {
+	_, role, err := middleware.GetUserFromContext(c)
+	if err != nil || role != "admin" {
+		return echo.NewHTTPError(http.StatusForbidden, "admin only")
+	}
+	title := c.QueryParam("title")
+	if title == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "missing title parameter")
+	}
+	logs, err := h.eventLogUC.GetLogsByTittle(c.Request().Context(), title)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "could not fetch logs")
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"logs": logs})
+}
