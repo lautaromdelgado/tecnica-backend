@@ -35,6 +35,7 @@ func InitRoutes(e *echo.Echo, authHandler *handler_auth.AuthHandler, eventHandle
 	admin.PUT("/users/:id/restore", authHandler.RestoreUser) // Restaurar usuario por ID siendo admin
 
 	// Relacionado a los eventos
-	admin.POST("/events/create", eventHandler.Create)    // Crear evento
-	admin.PUT("/events/:id/update", eventHandler.Update) // Actualizar evento por ID siendo admin
+	admin.POST("/events/create", eventHandler.Create)       // Crear evento
+	admin.PUT("/events/:id/update", eventHandler.Update)    // Actualizar evento por ID siendo admin
+	admin.DELETE("/events/:id/delete", eventHandler.Delete) // Eliminar evento por ID siendo admin
 }

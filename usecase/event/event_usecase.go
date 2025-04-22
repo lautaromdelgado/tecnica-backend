@@ -9,8 +9,9 @@ import (
 )
 
 type EventUseCase interface {
-	CreateEvent(ctx context.Context, event *model.Event) error
-	UpdateEvent(ctx context.Context, event *model.Event) error
+	CreateEvent(ctx context.Context, event *model.Event) error // Crea un nuevo evento
+	UpdateEvent(ctx context.Context, event *model.Event) error // Actualiza un evento existente
+	DeleteEvent(ctx context.Context, id uint) error            // Elimina un evento por ID (marcando como eliminado)
 }
 
 type eventUseCase struct {
@@ -37,4 +38,12 @@ func (uc *eventUseCase) UpdateEvent(ctx context.Context, event *model.Event) err
 		return errors.New("missing required fields")
 	}
 	return uc.eventRepo.Update(ctx, event)
+}
+
+// DeleteEvent elimina un evento por ID (marcando como eliminado)
+func (uc *eventUseCase) DeleteEvent(ctx context.Context, id uint) error {
+	if id == 0 {
+		return errors.New("invalid event id")
+	}
+	return uc.eventRepo.Delete(ctx, id)
 }

@@ -97,3 +97,25 @@ func (h *EventHandler) Update(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "event updated successfully"})
 }
+
+// Delete elimina un evento por ID (marcando como eliminado)
+func (h *EventHandler) Delete(c echo.Context) error {
+	_, role, err := middleware.GetUserFromContext(c)
+	if err != nil || role != "admin" {
+		return echo.NewHTTPError(http.StatusForbidden, "admin only")
+	}
+
+	idParam := c.Param("id")
+	eventID, err := strconv.ParseUint(idParam, 10, 64)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid event id")
+	}
+
+	err = h.eventUC.DeleteEvent(c.Request().Context(), uint(eventID))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "could not delete event")
+
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "event deleted successfully"})
+}

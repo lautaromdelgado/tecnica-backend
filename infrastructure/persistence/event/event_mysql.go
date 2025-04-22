@@ -59,3 +59,10 @@ func (r *eventRepo) Update(ctx context.Context, event *model.Event) error {
 		event.ID)
 	return err
 }
+
+// Delete marca un evento como eliminado (soft delete)
+func (r *eventRepo) Delete(ctx context.Context, id uint) error {
+	query := `UPDATE events SET deleted_at = NOW(), updated_at = NOW() WHERE id = ? AND deleted_at IS NULL`
+	_, err := r.db.ExecContext(ctx, query, id)
+	return err
+}
