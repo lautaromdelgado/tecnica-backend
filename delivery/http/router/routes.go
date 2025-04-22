@@ -41,4 +41,7 @@ func InitRoutes(e *echo.Echo, authHandler *handler_auth.AuthHandler, eventHandle
 	admin.PUT("/events/:id/publish", eventHandler.Publish)     // Publicar evento por ID siendo admin
 	admin.PUT("/events/:id/unpublish", eventHandler.Unpublish) // Despublicar evento por ID siendo admin
 	admin.PUT("/events/:id/restore", eventHandler.Restore)     // Restaurar evento por ID siendo admin
+
+	// Relacionado a los logs de eventos
+	admin.GET("/events/logs", eventHandler.GetLogs) // Obtener todos los logs de eventos siendo admin
 }

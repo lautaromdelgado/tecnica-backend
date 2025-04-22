@@ -8,16 +8,19 @@ import (
 	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/event"
 	"github.com/lautaromdelgado/tecnica-backend/delivery/http/middleware"
 	model "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/event"
-	usecase "github.com/lautaromdelgado/tecnica-backend/usecase/event"
+	usecase_event "github.com/lautaromdelgado/tecnica-backend/usecase/event"
+	usecase_event_log "github.com/lautaromdelgado/tecnica-backend/usecase/event_log"
 )
 
 type EventHandler struct {
-	eventUC usecase.EventUseCase
+	eventUC    usecase_event.EventUseCase
+	eventLogUC usecase_event_log.EventLogUseCase // Añadido para el EventLogUseCase
 }
 
-func NewEventHandler(uc usecase.EventUseCase) *EventHandler {
+func NewEventHandler(uc usecase_event.EventUseCase, eventLogUC usecase_event_log.EventLogUseCase) *EventHandler {
 	return &EventHandler{
-		eventUC: uc,
+		eventUC:    uc,
+		eventLogUC: eventLogUC, // Inicializa el EventLogUseCase
 	}
 }
 
@@ -171,4 +174,19 @@ func (h *EventHandler) Restore(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "event restored successfully"})
+}
+
+// GetLogs obtiene todos los logs de eventos
+func (h *EventHandler) GetLogs(c echo.Context) error {
+	_, role, err := middleware.GetUserFromContext(c)
+	if err != nil || role != "admin" {
+		return echo.NewHTTPError(http.StatusForbidden, "admin only")
+	}
+	logs, err := h.eventLogUC.GetAllLogs(c.Request().Context())
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "could not fetch logs")
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"logs": logs,
+	})
 }

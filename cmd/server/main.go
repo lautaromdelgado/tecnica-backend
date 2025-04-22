@@ -37,7 +37,7 @@ func main() {
 	// Dependencias para eventos
 	eventRepo := persistence_event.NewEventRepository(db)
 	eventUC := usecase_event.NewEventUseCase(eventRepo, eventLogRepo)
-	eventHandler := handler_event.NewEventHandler(eventUC)
+	eventHandler := handler_event.NewEventHandler(eventUC, eventLogRepo)
 
 	// Inicializar rutas
 	router.InitRoutes(e, authHandler, eventHandler, secret)
