@@ -1,0 +1,38 @@
+CREATE DATABASE hetmo_app;
+USE hetmo_app;
+
+-- Tabla de usuarios
+CREATE TABLE IF NOT EXISTS users (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(30) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    role ENUM('admin', 'user') NOT NULL DEFAULT 'user',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at DATETIME DEFAULT NULL
+);
+
+-- Tabla de eventos
+CREATE TABLE IF NOT EXISTS events (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    organizer VARCHAR(100) NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    long_description TEXT,
+    short_description VARCHAR(255),
+    date BIGINT NOT NULL,
+    location VARCHAR(255),
+    is_published BOOLEAN DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at DATETIME DEFAULT NULL
+);
+
+-- Tabla pivote user_event
+CREATE TABLE IF NOT EXISTS user_event (
+    user_id INT UNSIGNED NOT NULL,
+    event_id INT UNSIGNED NOT NULL,
+    joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, event_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+);
