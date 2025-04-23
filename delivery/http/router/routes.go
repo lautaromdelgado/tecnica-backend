@@ -4,10 +4,11 @@ import (
 	"github.com/labstack/echo/v4"
 	handler_auth "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/auth"
 	handler_event "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/event"
+	handler_user_event "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/user_event"
 	middleware "github.com/lautaromdelgado/tecnica-backend/delivery/http/middleware/jwt"
 )
 
-func InitRoutes(e *echo.Echo, authHandler *handler_auth.AuthHandler, eventHandler *handler_event.EventHandler, secret string) {
+func InitRoutes(e *echo.Echo, authHandler *handler_auth.AuthHandler, eventHandler *handler_event.EventHandler, userEventHandler *handler_user_event.UserEventHandler, secret string) {
 	// Rutas públicas
 	// Ruta: /api
 	public := e.Group("/api")
@@ -23,10 +24,11 @@ func InitRoutes(e *echo.Echo, authHandler *handler_auth.AuthHandler, eventHandle
 	admin.Use(middleware.OnlyAdmin()) // Middleware para verificar si el usuario es admin
 
 	// USUARIOS /api
-	private.PUT("/update/user", authHandler.Update)          // Actualizar usuario por ID
-	private.DELETE("/delete/user", authHandler.Delete)       // Eliminar usuario por ID
-	private.GET("/events/:id", eventHandler.GetEventByID)    // Obtener evento por ID
-	private.GET("/events/search", eventHandler.SearchEvents) // Buscar eventos por filtros
+	private.PUT("/update/user", authHandler.Update)                   // Actualizar usuario por ID
+	private.DELETE("/delete/user", authHandler.Delete)                // Eliminar usuario por ID
+	private.GET("/events/:id", eventHandler.GetEventByID)             // Obtener evento por ID
+	private.GET("/events/search", eventHandler.SearchEvents)          // Buscar eventos por filtros
+	private.POST("/events/:id/subscribe", userEventHandler.Subscribe) // Suscribir usuario a evento por ID
 
 	// ADMINISTRADORES = /api/admin/
 

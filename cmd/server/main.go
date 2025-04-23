@@ -4,14 +4,17 @@ import (
 	"github.com/labstack/echo/v4"
 	handler_user "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/auth"
 	handler_event "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/event"
+	handler_user_event "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/user_event"
 	"github.com/lautaromdelgado/tecnica-backend/delivery/http/router"
 	"github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence"
 	persistence_event "github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence/event"
 	persistence_event_log "github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence/event_log"
 	persistence_user "github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence/user"
+	persistence_user_event "github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence/user_event"
 	"github.com/lautaromdelgado/tecnica-backend/pkg/config"
 	usecase_auth "github.com/lautaromdelgado/tecnica-backend/usecase/auth"
 	usecase_event "github.com/lautaromdelgado/tecnica-backend/usecase/event"
+	usecase_user_event "github.com/lautaromdelgado/tecnica-backend/usecase/user_event"
 )
 
 func main() {
@@ -39,8 +42,13 @@ func main() {
 	eventUC := usecase_event.NewEventUseCase(eventRepo, eventLogRepo)
 	eventHandler := handler_event.NewEventHandler(eventUC, eventLogRepo)
 
+	// Dependencias para usuarios y eventos
+	userEventRepo := persistence_user_event.NewUserEventRepository(db)
+	userEventUC := usecase_user_event.NewUserEventUseCase(userEventRepo, eventRepo)
+	userEventHandler := handler_user_event.NewUserEventHandler(userEventUC)
+
 	// Inicializar rutas
-	router.InitRoutes(e, authHandler, eventHandler, secret)
+	router.InitRoutes(e, authHandler, eventHandler, userEventHandler, secret)
 
 	// Iniciar servidor
 	e.Logger.Fatal(e.Start(":" + cfg.Port))
