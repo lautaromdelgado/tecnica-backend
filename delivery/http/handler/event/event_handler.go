@@ -209,6 +209,7 @@ func (h *EventHandler) GetLogFiltered(c echo.Context) error {
 		"logs": logs})
 }
 
+// GetEventByID obtiene un evento por ID con permisos
 func (h *EventHandler) GetEventByID(c echo.Context) error {
 	role := "user"
 	if user := c.Get("user"); user != nil {
@@ -234,4 +235,26 @@ func (h *EventHandler) GetEventByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"event": event,
 	})
+}
+
+func (h *EventHandler) SearchEvents(c echo.Context) error {
+	role := "user"
+	if user := c.Get("user"); user != nil {
+		_, r, err := middleware.GetUserFromContext(c)
+		if err == nil {
+			role = r
+		}
+	}
+
+	// Obtenemos los parámetros de búsqueda
+	title := c.QueryParam("title")
+	organizer := c.QueryParam("organizer")
+	location := c.QueryParam("location")
+
+	event, err := h.eventUC.SearchEvents(c.Request().Context(), role, title, organizer, location)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to fetch events")
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"events": event})
 }

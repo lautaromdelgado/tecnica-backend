@@ -90,3 +90,34 @@ func (r *eventRepo) FindByID(ctx context.Context, id uint) (*model.Event, error)
 	}
 	return &event, nil
 }
+
+// FindWhitFilters busca eventos por filtros
+// Titulo del evento : organizador : ubicacion
+// incluideDrafts: si se incluyen eventos no publicados (solo para administradores)
+func (r *eventRepo) FindWhitFilters(ctx context.Context, title, organizer, location string, incluideDrafts bool) ([]*model.Event, error) {
+	query := `SELECT * FROM events WHERE deleted_at IS NULL`
+	var args []interface{}
+
+	// Para mostrar los eventos no publicados
+	// Solo pueden ver estos eventos los administradores
+	if !incluideDrafts {
+		query += ` AND is_published = true`
+	}
+	if title != "" {
+		query += ` AND LOWER(title) LIKE LOWER(?)`
+		args = append(args, "%"+title+"%")
+	}
+	if organizer != "" {
+		query += ` AND LOWER(organizer) LIKE LOKER(?)`
+		args = append(args, "%"+organizer+"%")
+	}
+	if location != "" {
+		query += ` AND LOWER(location) LIKE LOWER(?)`
+		args = append(args, "%"+location+"%")
+	}
+	query += ` ORDER BY date DESC`
+
+	var events []*model.Event
+	err := r.db.SelectContext(ctx, &events, query, args...)
+	return events, err
+}

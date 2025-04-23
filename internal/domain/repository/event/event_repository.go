@@ -13,5 +13,6 @@ type EventRepository interface {
 	UpdatePublishStatus(ctx context.Context, id uint, publish bool) error // Actualiza el estado de publicación de un evento por ID
 	RestoreByID(ctx context.Context, id uint) error                       // Restaurar evento por ID (soft delete)
 
-	FindByID(ctx context.Context, id uint) (*model.Event, error) // Busca un evento por ID
+	FindByID(ctx context.Context, id uint) (*model.Event, error)                                                        // Busca un evento por ID
+	FindWhitFilters(ctx context.Context, title, organizer, location string, includeDrafts bool) ([]*model.Event, error) // Busca eventos por filtros
 }

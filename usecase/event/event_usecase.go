@@ -12,12 +12,13 @@ import (
 )
 
 type EventUseCase interface {
-	CreateEvent(ctx context.Context, event *model.Event) error                                    // Crea un nuevo evento
-	UpdateEvent(ctx context.Context, event *model.Event) error                                    // Actualiza un evento existente
-	DeleteEvent(ctx context.Context, id uint) error                                               // Elimina un evento por ID (marcando como eliminado)
-	UpdatePublishStatus(ctx context.Context, id uint, publish bool) error                         // Actualiza el estado de publicación de un evento por ID
-	RestoreByID(ctx context.Context, id uint) error                                               // Restaurar evento por ID (soft delete)
-	GetByIDWhitPermissions(ctx context.Context, id uint, role string) (*dto.EventResponse, error) // Obtiene un evento por ID con permisos
+	CreateEvent(ctx context.Context, event *model.Event) error                                               // Crea un nuevo evento
+	UpdateEvent(ctx context.Context, event *model.Event) error                                               // Actualiza un evento existente
+	DeleteEvent(ctx context.Context, id uint) error                                                          // Elimina un evento por ID (marcando como eliminado)
+	UpdatePublishStatus(ctx context.Context, id uint, publish bool) error                                    // Actualiza el estado de publicación de un evento por ID
+	RestoreByID(ctx context.Context, id uint) error                                                          // Restaurar evento por ID (soft delete)
+	GetByIDWhitPermissions(ctx context.Context, id uint, role string) (*dto.EventResponse, error)            // Obtiene un evento por ID con permisos
+	SearchEvents(ctx context.Context, role, title, organizer, location string) ([]*dto.EventResponse, error) // Busca eventos por filtros
 }
 
 type eventUseCase struct {
@@ -157,4 +158,26 @@ func (uc *eventUseCase) GetByIDWhitPermissions(ctx context.Context, id uint, rol
 		IsPublished:      event.IsPublished,
 	}
 	return &event_dto, nil
+}
+
+func (uc *eventUseCase) SearchEvents(ctx context.Context, role, title, organizer, location string) ([]*dto.EventResponse, error) {
+	includeDrafts := (role == "admin")
+	events, err := uc.eventRepo.FindWhitFilters(ctx, title, organizer, location, includeDrafts)
+	if err != nil {
+		return nil, err
+	}
+	event_dto := make([]*dto.EventResponse, len(events))
+	for i, event := range events {
+		event_dto[i] = &dto.EventResponse{
+			ID:               event.ID,
+			Organizer:        event.Organizer,
+			Title:            event.Title,
+			LongDescription:  event.LongDescription,
+			ShortDescription: event.ShortDescription,
+			Date:             event.Date,
+			Location:         event.Location,
+			IsPublished:      event.IsPublished,
+		}
+	}
+	return event_dto, nil
 }
