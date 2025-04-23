@@ -160,6 +160,9 @@ func (uc *eventUseCase) GetByIDWhitPermissions(ctx context.Context, id uint, rol
 	return &event_dto, nil
 }
 
+// SearchEvents busca eventos por filtros
+// Verifica si el evento fue eliminado y si está publicado o no
+// Si el rol es admin, incluye los eventos en borrador
 func (uc *eventUseCase) SearchEvents(ctx context.Context, role, title, organizer, location string) ([]*dto.EventResponse, error) {
 	includeDrafts := (role == "admin")
 	events, err := uc.eventRepo.FindWhitFilters(ctx, title, organizer, location, includeDrafts)
