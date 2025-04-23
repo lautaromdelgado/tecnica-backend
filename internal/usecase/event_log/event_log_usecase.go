@@ -16,7 +16,7 @@ type eventLogUseCase struct {
 	eventLogRepo repository.EventLogRepository
 }
 
-func NewEventLogRepository(el repository.EventLogRepository) *eventLogUseCase {
+func NewEventLogUseCase(el repository.EventLogRepository) *eventLogUseCase {
 	return &eventLogUseCase{
 		eventLogRepo: el,
 	}
