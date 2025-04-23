@@ -237,6 +237,7 @@ func (h *EventHandler) GetEventByID(c echo.Context) error {
 	})
 }
 
+// SearchEvents busca eventos por filtros (título, organizador, ubicación)
 func (h *EventHandler) SearchEvents(c echo.Context) error {
 	role := "user"
 	if user := c.Get("user"); user != nil {
