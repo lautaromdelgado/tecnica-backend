@@ -48,3 +48,17 @@ func (h *UserEventHandler) Subscribe(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "user subscribed to event successfully"})
 }
+
+// MyEvents obtiene todos los eventos a los que un usuario está suscrito
+func (h *UserEventHandler) MyEvents(c echo.Context) error {
+	userID, _, err := middleware.GetUserFromContext(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
+	}
+	events, err := h.eventUserEvent.GetUserSuscribedEvents(c.Request().Context(), userID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "could not fetch events")
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"events": events})
+}

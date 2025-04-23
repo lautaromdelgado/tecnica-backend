@@ -5,6 +5,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/user_event"
+	model "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/event"
 )
 
 type UserEventRepository struct {
@@ -30,4 +31,18 @@ func (r *UserEventRepository) Exists(ctx context.Context, userID, eventID uint) 
 	var count int
 	err := r.db.GetContext(ctx, &count, query, userID, eventID)
 	return count > 0, err
+}
+
+// GetEventsByUser obtiene todos los eventos a los que un usuario está suscrito
+// y que no han sido eliminados
+func (r *UserEventRepository) GetEventsByUser(ctx context.Context, userID uint) ([]*model.Event, error) {
+	query := `
+		SELECT e.* FROM events e
+		INNER JOIN user_event ue ON e.id = ue.event_id
+		WHERE ue.user_id = ? AND e.deleted_at IS NULL
+		ORDER BY e.date ASC
+	`
+	var events []*model.Event
+	err := r.db.SelectContext(ctx, &events, query, userID)
+	return events, err
 }

@@ -29,6 +29,7 @@ func InitRoutes(e *echo.Echo, authHandler *handler_auth.AuthHandler, eventHandle
 	private.GET("/events/:id", eventHandler.GetEventByID)             // Obtener evento por ID
 	private.GET("/events/search", eventHandler.SearchEvents)          // Buscar eventos por filtros
 	private.POST("/events/:id/subscribe", userEventHandler.Subscribe) // Suscribir usuario a evento por ID
+	private.GET("/events/myevents", userEventHandler.MyEvents)        // Obtener eventos a los que el usuario está suscrito
 
 	// ADMINISTRADORES = /api/admin/
 

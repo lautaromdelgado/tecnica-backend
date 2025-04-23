@@ -5,13 +5,15 @@ import (
 	"errors"
 	"time"
 
+	dto_event "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/event"
 	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/user_event"
 	repository_event "github.com/lautaromdelgado/tecnica-backend/internal/domain/repository/event"
 	repository_user_event "github.com/lautaromdelgado/tecnica-backend/internal/domain/repository/user_event"
 )
 
 type UserEventUseCase interface {
-	SuscribeUserToEvent(ctx context.Context, userID, eventID uint) error // Suscribir un usuario a un evento
+	SuscribeUserToEvent(ctx context.Context, userID, eventID uint) error                         // Suscribir un usuario a un evento
+	GetUserSuscribedEvents(ctx context.Context, userID uint) ([]*dto_event.EventResponse, error) // Obtener eventos a los que un usuario está suscrito
 }
 
 type userEventUseCase struct {
@@ -60,4 +62,27 @@ func (uc *userEventUseCase) SuscribeUserToEvent(ctx context.Context, userID, eve
 		EventID: eventID,
 	}
 	return uc.userEventRepo.Insert(ctx, sub)
+}
+
+// GetUserSuscribedEvents obtiene todos los eventos a los que un usuario está suscrito
+// y que no han sido eliminados
+func (uc *userEventUseCase) GetUserSuscribedEvents(ctx context.Context, userID uint) ([]*dto_event.EventResponse, error) {
+	events, err := uc.userEventRepo.GetEventsByUser(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	eventsResponse := make([]*dto_event.EventResponse, len(events))
+	for i, event := range events {
+		eventsResponse[i] = &dto_event.EventResponse{
+			ID:               event.ID,
+			Organizer:        event.Organizer,
+			Title:            event.Title,
+			LongDescription:  event.LongDescription,
+			ShortDescription: event.ShortDescription,
+			Date:             event.Date,
+			Location:         event.Location,
+			IsPublished:      event.IsPublished,
+		}
+	}
+	return eventsResponse, nil
 }
