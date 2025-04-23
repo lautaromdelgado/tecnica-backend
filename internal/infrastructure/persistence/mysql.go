@@ -18,18 +18,29 @@ func NewDB(cfg *config.Config) (*sqlx.DB, error) {
 		cfg.DBPort,
 		cfg.DBName)
 
-	db, err := sqlx.Connect("mysql", dns)
-	if err != nil {
-		log.Fatalf("Error conectando a la base de datos: %v", err)
+	var db *sqlx.DB
+	var err error
+	for i := 0; i < 10; i++ {
+		db, err = sqlx.Connect("mysql", dns)
+		if err == nil {
+			break
+		}
+		log.Printf("Intento %d de conexión fallido: %v", i+1, err)
+		time.Sleep(3 * time.Second)
 	}
+	if err != nil {
+		log.Fatalf("No se pudo conectar a la base de datos: %v", err)
+	}
+
 	// Probar conexión
 	if err := db.Ping(); err != nil {
 		log.Fatalf("Error haciendo ping a la base de datos: %v", err)
 	}
-	// Configurar el pool de conexiones
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(25)
-	db.SetConnMaxLifetime(5 * time.Minute)
+
+	// Configurar pool de conexiones
+	db.SetMaxOpenConns(25)                 // conexiones máximas abiertas
+	db.SetMaxIdleConns(25)                 // conexiones en espera
+	db.SetConnMaxLifetime(5 * time.Minute) // duración máxima de una conexión
 	log.Printf("Conectado a la base de datos %s en %s:%s", cfg.DBName, cfg.DBHost, cfg.DBPort)
 	return db, nil
 }
