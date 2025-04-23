@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/event"
+	dto "github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/dto/event"
 	model "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/event"
 	model_event_log "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/event_log"
 	repository_event "github.com/lautaromdelgado/tecnica-backend/internal/domain/repository/event"

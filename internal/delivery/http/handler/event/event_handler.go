@@ -5,11 +5,11 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/event"
-	"github.com/lautaromdelgado/tecnica-backend/delivery/http/middleware"
+	dto "github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/dto/event"
+	"github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/middleware"
 	model "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/event"
-	usecase_event "github.com/lautaromdelgado/tecnica-backend/usecase/event"
-	usecase_event_log "github.com/lautaromdelgado/tecnica-backend/usecase/event_log"
+	usecase_event "github.com/lautaromdelgado/tecnica-backend/internal/usecase/event"
+	usecase_event_log "github.com/lautaromdelgado/tecnica-backend/internal/usecase/event_log"
 )
 
 type EventHandler struct {

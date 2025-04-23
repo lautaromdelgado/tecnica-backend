@@ -5,11 +5,11 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/user"
-	"github.com/lautaromdelgado/tecnica-backend/delivery/http/middleware"
-	"github.com/lautaromdelgado/tecnica-backend/infrastructure/token"
+	dto "github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/dto/user"
+	"github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/middleware"
 	model "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/user"
-	usecase "github.com/lautaromdelgado/tecnica-backend/usecase/auth"
+	"github.com/lautaromdelgado/tecnica-backend/internal/infrastructure/token"
+	usecase "github.com/lautaromdelgado/tecnica-backend/internal/usecase/auth"
 )
 
 type AuthHandler struct {

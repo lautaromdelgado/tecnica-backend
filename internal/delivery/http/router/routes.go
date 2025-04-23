@@ -2,10 +2,10 @@ package router
 
 import (
 	"github.com/labstack/echo/v4"
-	handler_auth "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/auth"
-	handler_event "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/event"
-	handler_user_event "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/user_event"
-	middleware "github.com/lautaromdelgado/tecnica-backend/delivery/http/middleware/jwt"
+	handler_auth "github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/handler/auth"
+	handler_event "github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/handler/event"
+	handler_user_event "github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/handler/user_event"
+	middleware "github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/middleware/jwt"
 )
 
 func InitRoutes(e *echo.Echo, authHandler *handler_auth.AuthHandler, eventHandler *handler_event.EventHandler, userEventHandler *handler_user_event.UserEventHandler, secret string) {

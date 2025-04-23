@@ -2,19 +2,19 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
-	handler_user "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/auth"
-	handler_event "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/event"
-	handler_user_event "github.com/lautaromdelgado/tecnica-backend/delivery/http/handler/user_event"
-	"github.com/lautaromdelgado/tecnica-backend/delivery/http/router"
-	"github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence"
-	persistence_event "github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence/event"
-	persistence_event_log "github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence/event_log"
-	persistence_user "github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence/user"
-	persistence_user_event "github.com/lautaromdelgado/tecnica-backend/infrastructure/persistence/user_event"
+	handler_user "github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/handler/auth"
+	handler_event "github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/handler/event"
+	handler_user_event "github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/handler/user_event"
+	"github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/router"
+	"github.com/lautaromdelgado/tecnica-backend/internal/infrastructure/persistence"
+	persistence_event "github.com/lautaromdelgado/tecnica-backend/internal/infrastructure/persistence/event"
+	persistence_event_log "github.com/lautaromdelgado/tecnica-backend/internal/infrastructure/persistence/event_log"
+	persistence_user "github.com/lautaromdelgado/tecnica-backend/internal/infrastructure/persistence/user"
+	persistence_user_event "github.com/lautaromdelgado/tecnica-backend/internal/infrastructure/persistence/user_event"
+	usecase_auth "github.com/lautaromdelgado/tecnica-backend/internal/usecase/auth"
+	usecase_event "github.com/lautaromdelgado/tecnica-backend/internal/usecase/event"
+	usecase_user_event "github.com/lautaromdelgado/tecnica-backend/internal/usecase/user_event"
 	"github.com/lautaromdelgado/tecnica-backend/pkg/config"
-	usecase_auth "github.com/lautaromdelgado/tecnica-backend/usecase/auth"
-	usecase_event "github.com/lautaromdelgado/tecnica-backend/usecase/event"
-	usecase_user_event "github.com/lautaromdelgado/tecnica-backend/usecase/user_event"
 )
 
 func main() {

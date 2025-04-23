@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/lautaromdelgado/tecnica-backend/infrastructure/token"
+	"github.com/lautaromdelgado/tecnica-backend/internal/infrastructure/token"
 )
 
 func GetUserFromContext(c echo.Context) (uint, string, error) {

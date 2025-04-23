@@ -6,7 +6,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
-	"github.com/lautaromdelgado/tecnica-backend/infrastructure/token"
+	"github.com/lautaromdelgado/tecnica-backend/internal/infrastructure/token"
 )
 
 // JWTMiddleware es un middleware de Echo que valida el token JWT en la cabecera Authorization

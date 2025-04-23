@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	dto_event "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/event"
-	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/user_event"
+	dto_event "github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/dto/event"
+	dto "github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/dto/user_event"
 	repository_event "github.com/lautaromdelgado/tecnica-backend/internal/domain/repository/event"
 	repository_user_event "github.com/lautaromdelgado/tecnica-backend/internal/domain/repository/user_event"
 )

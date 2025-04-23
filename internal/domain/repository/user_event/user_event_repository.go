@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/user_event"
+	dto "github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/dto/user_event"
 	model "github.com/lautaromdelgado/tecnica-backend/internal/domain/model/event"
 )
 

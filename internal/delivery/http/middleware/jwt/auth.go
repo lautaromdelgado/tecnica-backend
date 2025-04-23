@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/lautaromdelgado/tecnica-backend/delivery/http/middleware"
+	"github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/middleware"
 )
 
 // OnlyAdmin es un middleware que verifica si el usuario tiene el rol de administrador

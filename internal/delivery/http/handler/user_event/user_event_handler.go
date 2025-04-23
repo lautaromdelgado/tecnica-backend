@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	"github.com/lautaromdelgado/tecnica-backend/delivery/http/middleware"
-	usecase "github.com/lautaromdelgado/tecnica-backend/usecase/user_event"
+	"github.com/lautaromdelgado/tecnica-backend/internal/delivery/http/middleware"
+	usecase "github.com/lautaromdelgado/tecnica-backend/internal/usecase/user_event"
 )
 
 type UserEventHandler struct {
