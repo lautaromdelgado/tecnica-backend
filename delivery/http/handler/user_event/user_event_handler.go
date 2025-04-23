@@ -62,3 +62,27 @@ func (h *UserEventHandler) MyEvents(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"events": events})
 }
+
+// Unsubscribe elimina la suscripción de un usuario a un evento
+func (h *UserEventHandler) Unsubscribe(c echo.Context) error {
+	userID, _, err := middleware.GetUserFromContext(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
+	}
+
+	idParam := c.Param("id")
+	eventID, err := strconv.ParseUint(idParam, 10, 64)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid event ID")
+	}
+
+	err = h.eventUserEvent.UnsubscribeUserFromEvent(c.Request().Context(), userID, uint(eventID))
+	if err != nil {
+		if err.Error() == "not subscribed to this event" {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "could not unsubscribe")
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "user unsubscribed from event successfully"})
+}

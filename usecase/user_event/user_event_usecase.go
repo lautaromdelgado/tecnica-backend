@@ -14,6 +14,7 @@ import (
 type UserEventUseCase interface {
 	SuscribeUserToEvent(ctx context.Context, userID, eventID uint) error                         // Suscribir un usuario a un evento
 	GetUserSuscribedEvents(ctx context.Context, userID uint) ([]*dto_event.EventResponse, error) // Obtener eventos a los que un usuario está suscrito
+	UnsubscribeUserFromEvent(ctx context.Context, userID, eventID uint) error                    // Eliminar la suscripción de un usuario a un evento
 }
 
 type userEventUseCase struct {
@@ -85,4 +86,18 @@ func (uc *userEventUseCase) GetUserSuscribedEvents(ctx context.Context, userID u
 		}
 	}
 	return eventsResponse, nil
+}
+
+// UnsubscribeUserFromEvent elimina la suscripción de un usuario a un evento
+func (uc *userEventUseCase) UnsubscribeUserFromEvent(ctx context.Context, userID, eventID uint) error {
+	// verificar si el usuario esta suscripto al evento
+	exists, err := uc.userEventRepo.Exists(ctx, userID, eventID)
+	if err != nil {
+		return nil
+	}
+	if !exists {
+		return errors.New("user is not subscribed to this event")
+	}
+	// eliminar la suscripcion
+	return uc.userEventRepo.Delete(ctx, userID, eventID)
 }

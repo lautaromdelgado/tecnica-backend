@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jmoiron/sqlx"
 	dto "github.com/lautaromdelgado/tecnica-backend/delivery/http/dto/user_event"
@@ -45,4 +46,22 @@ func (r *UserEventRepository) GetEventsByUser(ctx context.Context, userID uint) 
 	var events []*model.Event
 	err := r.db.SelectContext(ctx, &events, query, userID)
 	return events, err
+}
+
+// Delete elimina la suscripción de un usuario a un evento
+func (r *UserEventRepository) Delete(ctx context.Context, userID, eventID uint) error {
+	query := `DELETE FROM user_event WHERE user_id = ? AND event_id = ?`
+	result, err := r.db.ExecContext(ctx, query, userID, eventID)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return errors.New("not subscribed to this event")
+	}
+	return nil
 }

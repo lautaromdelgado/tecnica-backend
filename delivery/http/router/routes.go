@@ -24,12 +24,13 @@ func InitRoutes(e *echo.Echo, authHandler *handler_auth.AuthHandler, eventHandle
 	admin.Use(middleware.OnlyAdmin()) // Middleware para verificar si el usuario es admin
 
 	// USUARIOS /api
-	private.PUT("/update/user", authHandler.Update)                   // Actualizar usuario por ID
-	private.DELETE("/delete/user", authHandler.Delete)                // Eliminar usuario por ID
-	private.GET("/events/:id", eventHandler.GetEventByID)             // Obtener evento por ID
-	private.GET("/events/search", eventHandler.SearchEvents)          // Buscar eventos por filtros
-	private.POST("/events/:id/subscribe", userEventHandler.Subscribe) // Suscribir usuario a evento por ID
-	private.GET("/events/myevents", userEventHandler.MyEvents)        // Obtener eventos a los que el usuario está suscrito
+	private.PUT("/update/user", authHandler.Update)                         // Actualizar usuario por ID
+	private.DELETE("/delete/user", authHandler.Delete)                      // Eliminar usuario por ID
+	private.GET("/events/:id", eventHandler.GetEventByID)                   // Obtener evento por ID
+	private.GET("/events/search", eventHandler.SearchEvents)                // Buscar eventos por filtros
+	private.POST("/events/:id/subscribe", userEventHandler.Subscribe)       // Suscribir usuario a evento por ID
+	private.GET("/events/myevents", userEventHandler.MyEvents)              // Obtener eventos a los que el usuario está suscrito
+	private.DELETE("/events/:id/unsubscribe", userEventHandler.Unsubscribe) // Cancelar suscripción a evento por ID
 
 	// ADMINISTRADORES = /api/admin/
 
