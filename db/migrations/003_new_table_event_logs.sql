@@ -1,4 +1,5 @@
-CREATE TABLE event_logs (
+-- Tabla para registrar el historial de los eventos
+CREATE TABLE IF NOT EXISTS event_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(150) NOT NULL,
     organizer VARCHAR(100) NOT NULL,
